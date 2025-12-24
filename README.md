@@ -8,19 +8,15 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-Latest-red?style=for-the-badge&logo=fastapi)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-**A modern, real-time server monitoring dashboard with GPU support**
+**现代化实时服务器监控面板，专为深度学习服务器监控而设计**
 
-[Features](#-features) • [Demo](#-quick-start) • [Installation](#-installation) • [Configuration](#-configuration) • [API](#-api-documentation)
+[功能特性](#-功能特性) • [快速开始](#-快速开始) • [配置说明](#-配置说明) • [API 文档](#-api-文档)
 
 </div>
 
 ---
 
-## Overview
-
-**MLServer_Dash** is a comprehensive server monitoring solution designed for machine learning workstations and production servers. It provides real-time visualization of system resources including CPU, memory, disk, network, and NVIDIA GPU metrics with a beautiful cyber-punk themed interface.
-
-## Features
+## 简介
 
 <div align="center">
 
@@ -28,49 +24,61 @@
 
 </div>
 
-- Real-time CPU monitoring with per-core utilization
-- Memory usage with model information
-- Physical disk monitoring with smart detection
-- NVIDIA GPU monitoring (utilization, temperature, power usage, memory)
-- Network activity with dual-line sparkline charts (upload/download)
-- Docker container management (start/stop/restart)
-- Responsive design with cyber-punk theme
-- Zero configuration required
+**MLServer_Dash** 是一款专为机器学习工作站和生产服务器设计的综合服务器监控解决方案。它采用赛博辉光风格的界面，提供实时的系统资源可视化，包括 CPU、内存、磁盘、网络和 NVIDIA GPU 指标。
 
-## Tech Stack
+## ✨ 功能特性
 
-### Backend
-- **FastAPI** - Modern, fast web framework for building APIs
-- **psutil** - Cross-platform system monitoring
-- **pynvml** - NVIDIA GPU monitoring
-- **docker** - Docker container management
+### 硬件监控
+- **CPU 监控** ⚡ - 实时显示每核心利用率，支持多核/多线程展示
+- **内存监控** 🧠 - 显示内存使用情况和型号信息
+- **物理磁盘监控** 💾 - 智能检测物理磁盘，显示型号和容量
+- **NVIDIA GPU 监控** 🎮 - 支持利用率、温度、功耗/TDP、显存等指标
+- **网络监控** 🌐 - 双折线图展示上传/下载速度，显示网卡型号和 IP 地址
 
-### Frontend
-- **React 18** - UI library
-- **Vite** - Next generation frontend tooling
-- **Tailwind CSS** - Utility-first CSS framework
-- **lucide-react** - Beautiful icons
-- **Canvas API** - Custom sparkline charts
+### 容器管理
+- **Docker 管理** 🐳 - 查看运行中的容器，支持启动/停止/重启操作
 
-## Prerequisites
+### 用户体验
+- **响应式设计** 📱 - 完美适配桌面和移动设备
+- **赛博朋克主题** 🌃 - 炫酷的霓虹灯风格界面
+- **零配置启动** 🚀 - 开箱即用，自动检测系统硬件
 
-Choose one of the following installation methods:
+## 🛠 技术栈
 
-**For Manual Installation:**
-- **Python**: 3.8 or higher
-- **Node.js**: 16.x or higher
+### 后端
+| 技术 | 说明 |
+|------|------|
+| ![FastAPI](https://img.shields.io/badge/FastAPI-Latest-red?style=flat-square) | 现代化 Web 框架 |
+| ![psutil](https://img.shields.io/badge/psutil-latest-blue?style=flat-square) | 跨平台系统监控 |
+| ![pynvml](https://img.shields.io/badge/pynvml-latest-green?style=flat-square) | NVIDIA GPU 监控 |
+| ![docker](https://img.shields.io/badge/docker-latest-blue?style=flat-square) | Docker 容器管理 |
 
-**For Docker Installation:**
-- **Docker**: 20.x or higher
-- **Docker Compose**: v2.x or higher
+### 前端
+| 技术 | 说明 |
+|------|------|
+| ![React](https://img.shields.io/badge/React-18+-cyan?style=flat-square) | UI 框架 |
+| ![Vite](https://img.shields.io/badge/Vite-Latest-purple?style=flat-square) | 新一代前端工具 |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=flat-square) | 原子化 CSS 框架 |
+| ![lucide-react](https://img.shields.io/badge/lucide-latest-orange?style=flat-square) | 图标库 |
+| ![Canvas](https://img.shields.io/badge/Canvas-API-FF6B6B?style=flat-square) | 自定义折线图 |
 
-**Optional:**
-- **NVIDIA GPU** - For GPU monitoring
-- **NVIDIA Container Toolkit** - For GPU monitoring in Docker
+## 📋 前置要求
 
-## Quick Start
+### 手动安装方式
+- **Python**: 3.8 或更高版本
+- **Node.js**: 16.x 或更高版本
 
-### Option 1: Using Start Script (Linux/macOS)
+### Docker 安装方式
+- **Docker**: 20.x 或更高版本
+- **Docker Compose**: v2.x 或更高版本
+
+### 可选项
+- **NVIDIA GPU** - 用于 GPU 监控
+- **NVIDIA Container Toolkit** - 用于 Docker 中的 GPU 监控
+
+## 🚀 快速开始
+
+### 方式一：使用启动脚本 (Linux/macOS)
 
 ```bash
 git clone https://github.com/dat-G/MLServer_Dash.git
@@ -79,21 +87,23 @@ chmod +x start.sh
 ./start.sh
 ```
 
-Access the dashboard at `http://localhost:5173`
+访问地址：`http://localhost:5173`
 
-### Option 2: Manual Installation
+---
 
-#### Backend Setup
+### 方式二：手动安装
+
+#### 1️⃣ 启动后端
 
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python main.py
 ```
 
-#### Frontend Setup
+#### 2️⃣ 启动前端
 
 ```bash
 cd frontend
@@ -101,36 +111,38 @@ npm install
 npm run dev
 ```
 
-Access the dashboard at `http://localhost:5173`
+访问地址：`http://localhost:5173`
 
-### Option 3: Docker Compose
+---
+
+### 方式三：Docker Compose
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/dat-G/MLServer_Dash.git
 cd MLServer_Dash
 
-# (Optional) Configure ports
+# (可选) 配置端口
 cp .env.example .env
-# Edit .env to customize FRONTEND_PORT and API_PORT
+# 编辑 .env 文件自定义端口
 
-# Start all services
+# 启动所有服务
 docker-compose up -d
 
-# View logs
+# 查看日志
 docker-compose logs -f
 
-# Stop services
+# 停止服务
 docker-compose down
 ```
 
-Access the dashboard at `http://localhost:5173`
+访问地址：`http://localhost:5173`
 
-**Note:** For GPU monitoring in Docker, ensure you have the [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker) installed.
+> **注意**: Docker 中使用 GPU 监控需要安装 [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker)
 
-## Configuration
+## ⚙️ 配置说明
 
-All configuration is centralized in `config.json` at the project root:
+所有配置集中在项目根目录的 `config.json` 文件中：
 
 ```json
 {
@@ -154,38 +166,38 @@ All configuration is centralized in `config.json` at the project root:
 }
 ```
 
-### Configuration Options
+### 配置选项
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `app.appName` | string | `"MLServer_Dash"` | Application name (used in UI and API) |
-| `app.githubUrl` | string | GitHub URL | Project repository link |
-| `backend.host` | string | `"0.0.0.0"` | Backend bind address |
-| `backend.port` | number | `8000` | Backend port |
-| `backend.corsOrigins` | array | `["*"]` | Allowed CORS origins (`["*"]` for all) |
-| `backend.pollInterval` | number | `2000` | Poll interval in milliseconds |
-| `backend.historySize` | number | `30` | Number of history data points for charts |
-| `frontend.port` | number | `5173` | Frontend development server port |
-| `frontend.apiHost` | string | `"localhost"` | API host for frontend |
-| `frontend.apiPort` | number | `8000` | API port for frontend |
+| 选项 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `app.appName` | string | `"MLServer_Dash"` | 应用名称（用于界面和 API） |
+| `app.githubUrl` | string | GitHub URL | 项目仓库链接 |
+| `backend.host` | string | `"0.0.0.0"` | 后端绑定地址 |
+| `backend.port` | number | `8000` | 后端端口 |
+| `backend.corsOrigins` | array | `["*"]` | 允许的 CORS 来源（`["*"]` 表示允许所有） |
+| `backend.pollInterval` | number | `2000` | 轮询间隔（毫秒） |
+| `backend.historySize` | number | `30` | 图表历史数据点数量 |
+| `frontend.port` | number | `5173` | 前端开发服务器端口 |
+| `frontend.apiHost` | string | `"localhost"` | API 主机地址 |
+| `frontend.apiPort` | number | `8000` | API 端口 |
 
-## API Documentation
+## 📡 API 文档
 
-### Base URL
+### 基础地址
 ```
 http://localhost:8000
 ```
 
-### Endpoints
+### 接口列表
 
-#### Get System Information
+#### 获取系统信息
 ```http
 GET /api/system
 ```
 
-Returns comprehensive system metrics.
+返回完整的系统指标信息。
 
-**Response Example:**
+**响应示例：**
 ```json
 {
   "hostname": "ml-server-01",
@@ -204,30 +216,12 @@ Returns comprehensive system metrics.
   "memory": {
     "total": 68719476736,
     "used": 34359738368,
-    "free": 34359738368,
     "percent": 50.0,
-    "total_human": "64.00 GB",
-    "used_human": "32.00 GB",
-    "free_human": "32.00 GB",
     "model": "Kingston Fury Beast"
   },
-  "disks": [
-    {
-      "name": "Samsung 970 EVO Plus",
-      "total": 1000204886016,
-      "used": 500102400000,
-      "free": 500102486016,
-      "percent": 50.0
-    }
-  ],
   "gpu": [
     {
       "name": "NVIDIA GeForce RTX 4090",
-      "memory": {
-        "total": 25769803776,
-        "used": 12884901888,
-        "percent": 50.0
-      },
       "utilization": 75.0,
       "temperature": 65,
       "power_usage": 350000,
@@ -237,112 +231,75 @@ Returns comprehensive system metrics.
   "network": [
     {
       "name": "eth0",
-      "model": "Intel Corporation I225-V",
-      "speed": 1000,
-      "ipv4": "192.168.1.100",
-      "ipv6": "fe80::1",
       "speed_up": 1024000,
       "speed_down": 2048000
     }
-  ],
-  "uptime": 86400
+  ]
 }
 ```
 
-#### Get Docker Containers
+#### 获取 Docker 容器
 ```http
 GET /api/docker
 ```
 
-Returns list of running Docker containers.
+返回运行中的 Docker 容器列表。
 
-**Response Example:**
-```json
-[
-  {
-    "id": "a1b2c3d4e5f6",
-    "name": "jupyterlab",
-    "image": "jupyter/scipy-notebook:latest",
-    "status": "running",
-    "state": "running",
-    "ports": "8888:8888"
-  }
-]
-```
-
-#### Container Actions
+#### 容器操作
 ```http
 POST /api/docker/{container_id}/action?action={action}
 ```
 
-Control Docker containers.
+控制 Docker 容器。
 
-**Parameters:**
-- `container_id` (path) - Container ID or name
-- `action` (query) - Action to perform: `start` | `stop` | `restart`
+**参数：**
+- `container_id` (路径) - 容器 ID 或名称
+- `action` (查询) - 操作类型: `start` | `stop` | `restart`
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Container a1b2c3d4e5f6 started"
-}
-```
-
-#### Health Check
+#### 健康检查
 ```http
 GET /api/health
 ```
 
-Check API health and available features.
+检查 API 健康状态和可用功能。
 
-**Response:**
-```json
-{
-  "status": "healthy",
-  "timestamp": "2025-12-24T10:30:00",
-  "docker_available": true,
-  "gpu_available": true
-}
-```
+### 交互式文档
 
-### Interactive Documentation
-
-Once the backend is running:
+后端启动后可访问：
 - **Swagger UI**: `http://localhost:8000/docs`
 - **ReDoc**: `http://localhost:8000/redoc`
 
-## Project Structure
+## 📁 项目结构
 
 ```
 MLServer_Dash/
 ├── backend/
-│   ├── main.py              # FastAPI application
-│   ├── Dockerfile           # Backend container image
-│   ├── requirements.txt     # Python dependencies
-│   └── .dockerignore        # Docker build exclusions
+│   ├── main.py              # FastAPI 应用
+│   ├── Dockerfile           # 后端镜像
+│   ├── requirements.txt     # Python 依赖
+│   └── .dockerignore        # Docker 构建排除
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx         # Main React component
-│   │   └── main.jsx        # Entry point
+│   │   ├── App.jsx         # React 主组件
+│   │   └── main.jsx        # 入口文件
 │   ├── index.html
 │   ├── package.json
 │   ├── vite.config.js
-│   ├── nginx.conf          # Nginx configuration for production
-│   ├── Dockerfile          # Frontend container image
-│   └── .dockerignore       # Docker build exclusions
-├── config.json              # Unified configuration
-├── docker-compose.yml       # Docker Compose orchestration
-├── .env.example            # Environment variables template
-├── start.sh                # Quick start script
-├── LICENSE                 # MIT License
-├── preview.png             # Screenshot
+│   ├── nginx.conf          # Nginx 生产配置
+│   ├── Dockerfile          # 前端镜像
+│   └── .dockerignore
+├── config.json              # 统一配置文件
+├── docker-compose.yml       # Docker Compose 编排
+├── .env.example            # 环境变量模板
+├── start.sh                # 快速启动脚本
+├── LICENSE                 # MIT 许可证
+├── preview.png             # 预览图
 └── README.md
 ```
 
-## Development
+## 💻 开发指南
 
-### Backend Development
+### 后端开发
 
 ```bash
 cd backend
@@ -350,7 +307,7 @@ source venv/bin/activate
 python main.py
 ```
 
-### Frontend Development
+### 前端开发
 
 ```bash
 cd frontend
@@ -358,26 +315,25 @@ npm install
 npm run dev
 ```
 
-### Build for Production
+### 生产构建
 
 ```bash
 cd frontend
 npm run build
 ```
 
-Output: `frontend/dist/`
+输出目录: `frontend/dist/`
 
-### Code Style
+### 代码规范
+- **Python**: 遵循 PEP 8，使用 4 空格缩进
+- **JavaScript/React**: 遵循 Airbnb 规范
+- **提交信息**: 使用约定式提交 (`feat:`, `fix:`, `docs:` 等)
 
-- **Python**: Follow PEP 8, use 4 spaces for indentation
-- **JavaScript/React**: Follow Airbnb style guide
-- **Commits**: Use conventional commit messages (`feat:`, `fix:`, `docs:`, etc.)
+## 🌐 部署
 
-## Deployment
+### 生产环境后端
 
-### Production Backend
-
-Using gunicorn with uvicorn workers:
+使用 gunicorn + uvicorn workers：
 
 ```bash
 cd backend
@@ -385,16 +341,16 @@ pip install gunicorn
 gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000
 ```
 
-### Production Frontend
+### 生产环境前端
 
-Build and serve with nginx:
+构建并使用 nginx 托管：
 
 ```bash
 cd frontend
 npm run build
 ```
 
-**nginx config:**
+**nginx 配置：**
 ```nginx
 server {
     listen 80;
@@ -413,9 +369,10 @@ server {
 }
 ```
 
-### Systemd Service (Linux)
+### Systemd 服务 (Linux)
 
-**Backend service** (`/etc/systemd/system/mlserver-dash-backend.service`):
+创建 `/etc/systemd/system/mlserver-dash-backend.service`：
+
 ```ini
 [Unit]
 Description=MLServer_Dash Backend
@@ -432,29 +389,29 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-Enable and start:
+启用并启动：
 ```bash
 sudo systemctl enable mlserver-dash-backend
 sudo systemctl start mlserver-dash-backend
 ```
 
-## Troubleshooting
+## 🔧 故障排除
 
-### GPU not showing up
-- Verify NVIDIA drivers: `nvidia-smi`
-- Install pynvml: `pip install nvidia-ml-py3`
-- Check backend logs for errors
+### GPU 不显示
+- 验证 NVIDIA 驱动: `nvidia-smi`
+- 安装 pynvml: `pip install nvidia-ml-py3`
+- 检查后端日志
 
-### Docker containers not showing
-- Check docker service: `systemctl status docker`
-- Add user to docker group: `sudo usermod -aG docker $USER`
-- Restart shell after adding to group
+### Docker 容器不显示
+- 检查 Docker 服务: `systemctl status docker`
+- 添加用户到 docker 组: `sudo usermod -aG docker $USER`
+- 重新登录使组权限生效
 
-### CORS errors
-- Update `corsOrigins` in `config.json`
-- For production, specify exact origins instead of `["*"]`
+### CORS 错误
+- 更新 `config.json` 中的 `corsOrigins`
+- 生产环境建议指定具体来源而非 `["*"]`
 
-### Port already in use
+### 端口被占用
 ```bash
 # Linux/macOS
 lsof -ti:8000 | xargs kill -9
@@ -464,49 +421,34 @@ netstat -ano | findstr :8000
 taskkill /PID <PID> /F
 ```
 
-### Memory model not showing
-- Requires sudo/root access to read dmidecode
-- Run with elevated privileges or accept no model data
+## 🤝 贡献
 
-## Roadmap
+欢迎贡献代码！请随时提交 Pull Request。
 
-- [ ] Dark/Light theme toggle
-- [ ] Custom alerts and notifications (webhook, email)
-- [ ] Historical data persistence (database)
-- [ ] Multi-server monitoring support
-- [ ] Export metrics (CSV, Prometheus)
-- [ ] Authentication/Authorization
-- [ ] Mobile app (React Native)
-- [ ] Desktop app (Electron)
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
 
-## Contributing
+## 📄 许可证
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## 🙏 致谢
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [FastAPI](https://fastapi.tiangolo.com/) - The web framework used
-- [React](https://react.dev/) - The UI framework
-- [Tailwind CSS](https://tailwindcss.com/) - The CSS framework
-- [lucide](https://lucide.dev/) - The icon library
-- [psutil](https://psutil.readthedocs.io/) - System monitoring library
+- [FastAPI](https://fastapi.tiangolo.com/) - Web 框架
+- [React](https://react.dev/) - UI 框架
+- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
+- [lucide](https://lucide.dev/) - 图标库
+- [psutil](https://psutil.readthedocs.io/) - 系统监控库
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for the ML and DevOps community**
+**为 ML 和 DevOps 社区精心打造**
 
-[⬆ Back to Top](#mlserver_dash)
+[⬆ 返回顶部](#mlserver_dash)
 
 </div>
