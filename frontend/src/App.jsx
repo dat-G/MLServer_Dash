@@ -13,13 +13,15 @@ import {
   Network,
   EthernetPort,
   Github,
+  Wifi,
+  WifiOff,
 } from 'lucide-react'
 import { Gpu } from 'lucide-react'
 import configJson from '../../config.json'
 
 const APP_TITLE = configJson.app.appName
 const GITHUB_URL = configJson.app.githubUrl
-const HISTORY_SIZE = configJson.server.historySize
+const HISTORY_SIZE = configJson.server.historySize || 30
 
 const COLORS = {
   blue: '#00d4ff',
@@ -441,6 +443,8 @@ function App() {
   const [dockerContainers, setDockerContainers] = useState([])
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState(null)
+  const [wsConnected, setWsConnected] = useState(false)
+  const [wsClientCount, setWsClientCount] = useState(0)
 
   // 存储每个核心的独立历史数据
   const [coreHistories, setCoreHistories] = useState([])
@@ -546,23 +550,164 @@ function App() {
     }
   }
 
-  // 初始加载和轮询
+  // WebSocket 连接管理
   useEffect(() => {
+    let ws = null
+    let reconnectTimeout = null
+    let reconnectAttempts = 0
+    const maxReconnectAttempts = 5
+    const baseReconnectDelay = 1000 // 1秒
+
+    // 初始加载数据
     const loadData = async () => {
       setLoading(true)
       await Promise.all([fetchSystemInfo(), fetchDockerInfo()])
       setLoading(false)
     }
 
-    loadData()
+    // 建立 WebSocket 连接
+    const connect = () => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const host = window.location.host
+      const wsUrl = `${protocol}//${host}/api/ws`
 
-    // 每2秒轮询一次
-    const interval = setInterval(() => {
-      fetchSystemInfo()
-      fetchDockerInfo()
-    }, 2000)
+      console.log('Connecting to WebSocket:', wsUrl)
+      ws = new WebSocket(wsUrl)
 
-    return () => clearInterval(interval)
+      ws.onopen = () => {
+        console.log('WebSocket connected')
+        reconnectAttempts = 0
+        setWsConnected(true)
+        setLoading(false)
+      }
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data)
+          if (message.type === 'system') {
+            // 更新系统信息（复用现有的状态更新逻辑）
+            const data = message.data
+            setSystemInfo(data)
+
+            // 更新 WebSocket 客户端数量
+            if (data.ws_clients !== undefined) {
+              setWsClientCount(data.ws_clients)
+            }
+
+            // 更新每个核心的独立历史数据
+            if (data.cpu && data.cpu.per_core_percent) {
+              setCoreHistories(prevHistories => {
+                if (prevHistories.length === 0) {
+                  const threadCount = data.cpu.threads
+                  const initialHistories = []
+                  for (let i = 0; i < threadCount; i++) {
+                    initialHistories.push(Array(HISTORY_SIZE).fill(0))
+                  }
+                  prevHistories = initialHistories
+                }
+
+                return prevHistories.map((coreHistory, coreIndex) => {
+                  const newPercent = data.cpu.per_core_percent[coreIndex] ?? 0
+                  const newHistory = [...coreHistory, newPercent]
+                  if (newHistory.length > HISTORY_SIZE) {
+                    newHistory.shift()
+                  }
+                  return newHistory
+                })
+              })
+            }
+
+            // 更新内存历史数据
+            if (data.memory) {
+              setMemoryHistory(prevHistory => {
+                const newHistory = [...prevHistory, data.memory.percent]
+                if (newHistory.length > HISTORY_SIZE) {
+                  newHistory.shift()
+                }
+                return newHistory
+              })
+            }
+
+            // 更新网络历史数据
+            if (data.network && Array.isArray(data.network)) {
+              setNetworkHistory(prevHistory => {
+                const newHistory = { ...prevHistory }
+                const currentNames = new Set(data.network.map(net => net.name))
+
+                Object.keys(newHistory).forEach(name => {
+                  if (!currentNames.has(name)) {
+                    delete newHistory[name]
+                  }
+                })
+
+                data.network.forEach(net => {
+                  if (!newHistory[net.name]) {
+                    newHistory[net.name] = {
+                      up: Array(HISTORY_SIZE).fill(0),
+                      down: Array(HISTORY_SIZE).fill(0)
+                    }
+                  }
+                  const speedUp = net.speed_up ?? 0
+                  const speedDown = net.speed_down ?? 0
+                  newHistory[net.name].up = [...newHistory[net.name].up, speedUp]
+                  newHistory[net.name].down = [...newHistory[net.name].down, speedDown]
+                  if (newHistory[net.name].up.length > HISTORY_SIZE) {
+                    newHistory[net.name].up.shift()
+                  }
+                  if (newHistory[net.name].down.length > HISTORY_SIZE) {
+                    newHistory[net.name].down.shift()
+                  }
+                })
+                return newHistory
+              })
+            }
+
+            setLastUpdate(new Date())
+          } else if (message.type === 'docker') {
+            setDockerContainers(message.data)
+          }
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error)
+        }
+      }
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error)
+        setWsConnected(false)
+      }
+
+      ws.onclose = (event) => {
+        console.log('WebSocket closed:', event.code, event.reason)
+        ws = null
+        setWsConnected(false)
+
+        // 尝试重连
+        if (reconnectAttempts < maxReconnectAttempts) {
+          reconnectAttempts++
+          const delay = baseReconnectDelay * Math.pow(2, reconnectAttempts - 1) // 指数退避
+          console.log(`Reconnecting in ${delay}ms... (attempt ${reconnectAttempts}/${maxReconnectAttempts})`)
+          reconnectTimeout = setTimeout(connect, delay)
+        } else {
+          console.error('Max reconnection attempts reached')
+          setLoading(false)
+        }
+      }
+    }
+
+    // 先加载数据，然后建立 WebSocket 连接
+    loadData().then(() => {
+      connect()
+    })
+
+    // 清理函数
+    return () => {
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout)
+      }
+      if (ws) {
+        ws.close()
+      }
+    }
   }, [])
 
   // 设置页面标题
@@ -615,18 +760,24 @@ function App() {
             </div>
           </div>
           <div className="flex flex-col gap-2 text-gray-400">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span className="font-mono">{lastUpdate?.toLocaleTimeString()}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span className="font-mono">
-                  {String(Math.floor(systemInfo.uptime / 3600)).padStart(2, '0')}:
-                  {String(Math.floor((systemInfo.uptime % 3600) / 60)).padStart(2, '0')}:
-                  {String(systemInfo.uptime % 60).padStart(2, '0')}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span className="font-mono">{lastUpdate?.toLocaleTimeString()}</span>
                 </span>
+                <span className="flex items-center gap-1">
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span className="font-mono">
+                    {String(Math.floor(systemInfo.uptime / 3600)).padStart(2, '0')}:
+                    {String(Math.floor((systemInfo.uptime % 3600) / 60)).padStart(2, '0')}:
+                    {String(systemInfo.uptime % 60).padStart(2, '0')}
+                  </span>
+                </span>
+              </div>
+              <span className={`flex items-center gap-1 ${wsConnected ? 'text-neon-green' : 'text-gray-500'}`} title={wsConnected ? 'WebSocket 已连接' : 'WebSocket 未连接'}>
+                {wsConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                <span className="font-mono text-sm">({wsClientCount})</span>
               </span>
             </div>
             <a

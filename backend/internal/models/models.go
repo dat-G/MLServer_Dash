@@ -84,15 +84,16 @@ type DistroInfo struct {
 
 // SystemInfo 系统信息
 type SystemInfo struct {
-	Hostname string              `json:"hostname"`
-	OS       string              `json:"os"`
-	Distro   *DistroInfo         `json:"distro,omitempty"`
-	CPU      CPUInfo             `json:"cpu"`
-	Memory   MemoryInfo          `json:"memory"`
-	Disks    []DiskInfo          `json:"disks"`
-	Uptime   int                 `json:"uptime"`
-	GPU      []GPUInfo           `json:"gpu,omitempty"`
-	Network  []NetworkInterface  `json:"network,omitempty"`
+	Hostname   string             `json:"hostname"`
+	OS         string             `json:"os"`
+	Distro     *DistroInfo        `json:"distro,omitempty"`
+	CPU        CPUInfo            `json:"cpu"`
+	Memory     MemoryInfo         `json:"memory"`
+	Disks      []DiskInfo         `json:"disks"`
+	Uptime     int                `json:"uptime"`
+	GPU        []GPUInfo          `json:"gpu,omitempty"`
+	Network    []NetworkInterface `json:"network,omitempty"`
+	WSClients  int                `json:"ws_clients,omitempty"` // WebSocket 连接数
 }
 
 // DockerContainer Docker容器信息
