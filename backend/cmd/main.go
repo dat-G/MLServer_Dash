@@ -11,6 +11,7 @@ import (
 	"github.com/dat-G/MLServer_Dash/backend/internal/docker"
 	"github.com/dat-G/MLServer_Dash/backend/internal/monitor"
 	"github.com/dat-G/MLServer_Dash/backend/internal/router"
+	ws "github.com/dat-G/MLServer_Dash/backend/internal/websocket"
 )
 
 func main() {
@@ -30,6 +31,12 @@ func main() {
 	}
 	defer docker.Close()
 
+	// 初始化 WebSocket Hub
+	ws.InitHub()
+
+	// 启动广播器
+	ws.StartBroadcasters(cfg)
+
 	// 设置路由
 	app := router.Setup(cfg)
 
@@ -38,6 +45,7 @@ func main() {
 	log.Printf("%s starting...", cfg.App.AppName)
 	log.Printf("Web UI: http://%s", addr)
 	log.Printf("API: http://%s/api", addr)
+	log.Printf("WebSocket: ws://%s/api/ws", addr)
 	if cfg.App.GithubURL != "" {
 		log.Printf("GitHub: %s", cfg.App.GithubURL)
 	}

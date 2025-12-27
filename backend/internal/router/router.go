@@ -8,6 +8,7 @@ import (
 	embedfs "github.com/dat-G/MLServer_Dash/backend/internal/embed"
 	"github.com/dat-G/MLServer_Dash/backend/internal/handlers"
 	"github.com/dat-G/MLServer_Dash/backend/internal/middleware"
+	ws "github.com/dat-G/MLServer_Dash/backend/internal/websocket"
 )
 
 // Setup 配置并返回 Gin 路由引擎
@@ -33,6 +34,7 @@ func Setup(cfg *config.Config) *gin.Engine {
 func setupAPIRoutes(router *gin.Engine) {
 	api := router.Group("/api")
 	{
+		api.GET("/ws", ws.HandleWebSocket)
 		api.GET("/system", handlers.SystemInfoHandler)
 		api.GET("/docker", handlers.DockerListHandler)
 		api.POST("/docker/:container_id/action", handlers.DockerActionHandler)
@@ -47,6 +49,12 @@ func setupFrontendRoutes(router *gin.Engine) {
 
 	// 静态资源路由
 	router.GET("/assets/*filepath", func(c *gin.Context) {
+		fileServer.ServeHTTP(c.Writer, c.Request)
+	})
+
+	// 字体文件路由（设置正确的 MIME 类型）
+	router.GET("/fonts/*filepath", func(c *gin.Context) {
+		c.Writer.Header().Set("Content-Type", "font/woff2")
 		fileServer.ServeHTTP(c.Writer, c.Request)
 	})
 
