@@ -1,16 +1,15 @@
 version: '3.8'
 
 services:
-  backend:
+  mlserver-dash:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: mlserver-dash-backend
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: mlserver-dash
     ports:
-      - "${API_PORT:-8000}:8000"
+      - "${PORT:-8000}:8000"
     volumes:
-      - /usr/lib/x86_64-linux-gnu/nvidia:/usr/lib/x86_64-linux-gnu/nvidia:ro
-      - /usr/lib/aarch64-linux-gnu/nvidia:/usr/lib/aarch64-linux-gnu/nvidia:ro
+      - ./config.json:/app/config.json:ro
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     deploy:
@@ -21,22 +20,3 @@ services:
               count: all
               capabilities: [gpu]
     restart: unless-stopped
-    networks:
-      - mlserver-dash-network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: mlserver-dash-frontend
-    ports:
-      - "${FRONTEND_PORT:-5173}:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - mlserver-dash-network
-
-networks:
-  mlserver-dash-network:
-    driver: bridge

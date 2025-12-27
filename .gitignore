@@ -34,6 +34,13 @@ dist/
 dist-ssr/
 *.local
 
+# Backend
+backend/internal/embed/dist/
+
+# Compiled binary (project root)
+mlserver-dash-backend
+mlserver-dash-backend.exe
+
 # IDE
 .vscode/
 .idea/
@@ -59,3 +66,7 @@ Thumbs.db
 # Docker
 .env.local
 *.local
+
+# Claude
+.claude
+CLAUDE.md

@@ -851,13 +851,13 @@ function App() {
                         电源
                       </span>
                       <span className="font-semibold font-mono text-neon-yellow">
-                        {(gpu.power_usage / 1000).toFixed(1)}W / {(gpu.power_tdp / 1000).toFixed(0)}W
+                        {gpu.power_usage}W / {gpu.power_limit || gpu.power_default_limit || gpu.enforced_power_limit || '-'}W
                       </span>
                     </div>
                     <div className="progress-bar">
                       <div
                         className="progress-fill bg-gradient-to-r from-yellow-500 to-neon-yellow"
-                        style={{ width: `${(gpu.power_usage / gpu.power_tdp * 100) || 0}%` }}
+                        style={{ width: `${(gpu.power_usage / (gpu.power_limit || gpu.enforced_power_limit || gpu.power_default_limit || 1) * 100) || 0}%` }}
                       />
                     </div>
                   </div>

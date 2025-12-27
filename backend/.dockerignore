@@ -1,16 +1,38 @@
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
+# Binaries
+*.exe
+*.exe~
+*.dll
 *.so
-*.egg
-*.egg-info
-dist
-build
-venv
-env
-.env
-.git
+*.dylib
+mlserver-dash-backend
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
 .gitignore
+
+# Docs
 README.md
+*.md
