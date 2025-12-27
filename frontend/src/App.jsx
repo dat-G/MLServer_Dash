@@ -13,8 +13,7 @@ import {
   Network,
   EthernetPort,
   Github,
-  Wifi,
-  WifiOff,
+  Rss,
 } from 'lucide-react'
 import { Gpu } from 'lucide-react'
 import configJson from '../../config.json'
@@ -776,7 +775,7 @@ function App() {
                 </span>
               </div>
               <span className={`flex items-center gap-1 ${wsConnected ? 'text-neon-green' : 'text-gray-500'}`} title={wsConnected ? 'WebSocket 已连接' : 'WebSocket 未连接'}>
-                {wsConnected ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
+                <Rss className={`w-4 h-4 ${wsConnected ? '' : 'opacity-50'}`} />
                 <span className="font-mono text-sm">({wsClientCount})</span>
               </span>
             </div>
