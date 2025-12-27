@@ -1,0 +1,21 @@
+{
+  "app": {
+    "appName": "MLServer_Dash",
+    "githubUrl": "https://github.com/dat-G/MLServer_Dash"
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "corsOrigins": [
+      "*"
+    ],
+    "corsMethods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "pollInterval": 2000,
+    "historySize": 30
+  }
+}
