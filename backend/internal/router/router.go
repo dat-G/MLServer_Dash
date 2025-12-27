@@ -39,6 +39,9 @@ func setupAPIRoutes(router *gin.Engine) {
 		api.GET("/docker", handlers.DockerListHandler)
 		api.POST("/docker/:container_id/action", handlers.DockerActionHandler)
 		api.GET("/health", handlers.HealthCheckHandler)
+
+		// 服务器管理路由（只读）
+		api.GET("/servers", handlers.GetServers)
 	}
 }
 
