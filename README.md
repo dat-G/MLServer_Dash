@@ -3,9 +3,9 @@
 <div align="center">
 
 ![MLServer_Dash](https://img.shields.io/badge/MLServer_Dash-v1.0.0-blue?style=for-the-badge)
-![Python](https://img.shields.io/badge/Python-3.8+-green?style=for-the-badge&logo=python)
+![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go)
 ![React](https://img.shields.io/badge/React-18+-cyan?style=for-the-badge&logo=react)
-![FastAPI](https://img.shields.io/badge/FastAPI-Latest-red?style=for-the-badge&logo=fastapi)
+![Gin](https://img.shields.io/badge/Gin-Latest-00ADD8?style=for-the-badge&logo=go)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 **现代化实时服务器监控面板，专为深度学习服务器监控而设计**
@@ -48,9 +48,9 @@
 ### 后端
 | 技术 | 说明 |
 |------|------|
-| ![FastAPI](https://img.shields.io/badge/FastAPI-Latest-red?style=flat-square) | 现代化 Web 框架 |
-| ![psutil](https://img.shields.io/badge/psutil-latest-blue?style=flat-square) | 跨平台系统监控 |
-| ![pynvml](https://img.shields.io/badge/pynvml-latest-green?style=flat-square) | NVIDIA GPU 监控 |
+| ![Gin](https://img.shields.io/badge/Gin-Latest-00ADD8?style=flat-square) | 高性能 Web 框架 |
+| ![gopsutil](https://img.shields.io/badge/gopsutil-latest-blue?style=flat-square) | 跨平台系统监控 |
+| ![go-nvml](https://img.shields.io/badge/go--nvml-latest-green?style=flat-square) | NVIDIA GPU 监控 |
 | ![docker](https://img.shields.io/badge/docker-latest-blue?style=flat-square) | Docker 容器管理 |
 
 ### 前端
@@ -65,7 +65,7 @@
 ## 📋 前置要求
 
 ### 手动安装方式
-- **Python**: 3.8 或更高版本
+- **Go**: 1.21 或更高版本
 - **Node.js**: 16.x 或更高版本
 
 ### Docker 安装方式
@@ -78,40 +78,41 @@
 
 ## 🚀 快速开始
 
-### 方式一：使用启动脚本 (Linux/macOS)
+### 方式一：使用预编译二进制文件（推荐）
+
+下载对应平台的二进制文件，与 `config.json` 放在同一目录：
 
 ```bash
-git clone https://github.com/dat-G/MLServer_Dash.git
-cd MLServer_Dash
-chmod +x start.sh
-./start.sh
+# Windows
+mlserver-dash-backend.exe
+
+# Linux/macOS
+./mlserver-dash-backend
 ```
 
-访问地址：`http://localhost:5173`
+访问地址：`http://localhost:8000`
 
 ---
 
-### 方式二：手动安装
+### 方式二：从源码构建
 
-#### 1️⃣ 启动后端
-
+#### Windows
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py
+build.bat
 ```
 
-#### 2️⃣ 启动前端
-
+#### Linux/macOS
 ```bash
-cd frontend
-npm install
-npm run dev
+chmod +x build.sh
+./build.sh
 ```
 
-访问地址：`http://localhost:5173`
+运行编译后的可执行文件：
+```bash
+./mlserver-dash-backend
+```
+
+访问地址：`http://localhost:8000`
 
 ---
 
@@ -126,7 +127,7 @@ cd MLServer_Dash
 cp .env.example .env
 # 编辑 .env 文件自定义端口
 
-# 启动所有服务
+# 启动服务
 docker-compose up -d
 
 # 查看日志
@@ -136,7 +137,7 @@ docker-compose logs -f
 docker-compose down
 ```
 
-访问地址：`http://localhost:5173`
+访问地址：`http://localhost:8000`
 
 > **注意**: Docker 中使用 GPU 监控需要安装 [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker)
 
@@ -150,18 +151,13 @@ docker-compose down
     "appName": "MLServer_Dash",
     "githubUrl": "https://github.com/dat-G/MLServer_Dash"
   },
-  "backend": {
+  "server": {
     "host": "0.0.0.0",
     "port": 8000,
     "corsOrigins": ["*"],
     "corsMethods": ["GET", "POST", "PUT", "DELETE"],
     "pollInterval": 2000,
     "historySize": 30
-  },
-  "frontend": {
-    "port": 5173,
-    "apiHost": "localhost",
-    "apiPort": 8000
   }
 }
 ```
@@ -172,14 +168,11 @@ docker-compose down
 |------|------|--------|------|
 | `app.appName` | string | `"MLServer_Dash"` | 应用名称（用于界面和 API） |
 | `app.githubUrl` | string | GitHub URL | 项目仓库链接 |
-| `backend.host` | string | `"0.0.0.0"` | 后端绑定地址 |
-| `backend.port` | number | `8000` | 后端端口 |
-| `backend.corsOrigins` | array | `["*"]` | 允许的 CORS 来源（`["*"]` 表示允许所有） |
-| `backend.pollInterval` | number | `2000` | 轮询间隔（毫秒） |
-| `backend.historySize` | number | `30` | 图表历史数据点数量 |
-| `frontend.port` | number | `5173` | 前端开发服务器端口 |
-| `frontend.apiHost` | string | `"localhost"` | API 主机地址 |
-| `frontend.apiPort` | number | `8000` | API 端口 |
+| `server.host` | string | `"0.0.0.0"` | 服务绑定地址 |
+| `server.port` | number | `8000` | 服务端口 |
+| `server.corsOrigins` | array | `["*"]` | 允许的 CORS 来源（`["*"]` 表示允许所有） |
+| `server.pollInterval` | number | `2000` | 前端轮询间隔（毫秒） |
+| `server.historySize` | number | `30` | 图表历史数据点数量 |
 
 ## 📡 API 文档
 
@@ -224,8 +217,10 @@ GET /api/system
       "name": "NVIDIA GeForce RTX 4090",
       "utilization": 75.0,
       "temperature": 65,
-      "power_usage": 350000,
-      "power_tdp": 450000
+      "power_usage": 350,
+      "power_limit": 450,
+      "enforced_power_limit": 450,
+      "power_default_limit": 450
     }
   ],
   "network": [
@@ -263,20 +258,25 @@ GET /api/health
 
 检查 API 健康状态和可用功能。
 
-### 交互式文档
-
-后端启动后可访问：
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
-
 ## 📁 项目结构
 
 ```
 MLServer_Dash/
 ├── backend/
-│   ├── main.py              # FastAPI 应用
-│   ├── Dockerfile           # 后端镜像
-│   ├── requirements.txt     # Python 依赖
+│   ├── cmd/
+│   │   └── main.go          # 应用入口
+│   ├── internal/
+│   │   ├── config/          # 配置管理
+│   │   ├── docker/          # Docker 管理
+│   │   ├── embed/           # 嵌入的前端静态文件
+│   │   ├── handlers/        # HTTP 处理器
+│   │   ├── middleware/      # 中间件
+│   │   ├── models/          # 数据模型
+│   │   ├── monitor/         # 系统监控
+│   │   └── router/          # 路由设置
+│   ├── Dockerfile           # 多阶段构建（前端+后端）
+│   ├── go.mod               # Go 模块
+│   ├── Makefile             # 构建脚本
 │   └── .dockerignore        # Docker 构建排除
 ├── frontend/
 │   ├── src/
@@ -284,14 +284,12 @@ MLServer_Dash/
 │   │   └── main.jsx        # 入口文件
 │   ├── index.html
 │   ├── package.json
-│   ├── vite.config.js
-│   ├── nginx.conf          # Nginx 生产配置
-│   ├── Dockerfile          # 前端镜像
-│   └── .dockerignore
+│   └── vite.config.js
 ├── config.json              # 统一配置文件
 ├── docker-compose.yml       # Docker Compose 编排
+├── build.bat                # Windows 构建脚本
+├── build.sh                 # Linux/macOS 构建脚本
 ├── .env.example            # 环境变量模板
-├── start.sh                # 快速启动脚本
 ├── LICENSE                 # MIT 许可证
 ├── preview.png             # 预览图
 └── README.md
@@ -299,90 +297,81 @@ MLServer_Dash/
 
 ## 💻 开发指南
 
-### 后端开发
+### 开发模式（前后端分离）
 
 ```bash
+# 终端 1: 启动后端
 cd backend
-source venv/bin/activate
-python main.py
-```
+go run ./cmd/main.go
 
-### 前端开发
-
-```bash
+# 终端 2: 启动前端
 cd frontend
 npm install
 npm run dev
 ```
 
+前端开发服务器：`http://localhost:5173`
+后端 API：`http://localhost:8000`
+
 ### 生产构建
 
+#### Windows
 ```bash
-cd frontend
-npm run build
+build.bat
 ```
 
-输出目录: `frontend/dist/`
+#### Linux/macOS
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+生成的可执行文件包含完整应用，直接运行即可。
+
+### 使用 Makefile
+
+```bash
+cd backend
+make build-embed    # 构建嵌入前端的完整版本
+make run           # 运行开发服务器
+make clean         # 清理构建文件
+```
 
 ### 代码规范
-- **Python**: 遵循 PEP 8，使用 4 空格缩进
+- **Go**: 遵循 Effective Go，使用 `gofmt` 格式化
 - **JavaScript/React**: 遵循 Airbnb 规范
 - **提交信息**: 使用约定式提交 (`feat:`, `fix:`, `docs:` 等)
 
 ## 🌐 部署
 
-### 生产环境后端
-
-使用 gunicorn + uvicorn workers：
+### 单文件部署（推荐）
 
 ```bash
-cd backend
-pip install gunicorn
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000
-```
+# 构建
+build.bat          # Windows
+./build.sh         # Linux/macOS
 
-### 生产环境前端
+# 部署（将以下文件复制到目标服务器）
+# - mlserver-dash-backend (可执行文件)
+# - config.json (配置文件)
 
-构建并使用 nginx 托管：
-
-```bash
-cd frontend
-npm run build
-```
-
-**nginx 配置：**
-```nginx
-server {
-    listen 80;
-    root /path/to/frontend/dist;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    location /api/ {
-        proxy_pass http://localhost:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
+# 运行
+./mlserver-dash-backend
 ```
 
 ### Systemd 服务 (Linux)
 
-创建 `/etc/systemd/system/mlserver-dash-backend.service`：
+创建 `/etc/systemd/system/mlserver-dash.service`：
 
 ```ini
 [Unit]
-Description=MLServer_Dash Backend
+Description=MLServer_Dash
 After=network.target
 
 [Service]
 User=www-data
-WorkingDirectory=/path/to/MLServer_Dash/backend
-Environment="PATH=/path/to/MLServer_Dash/backend/venv/bin"
-ExecStart=/path/to/MLServer_Dash/backend/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000
+WorkingDirectory=/opt/mlserver-dash
+ExecStart=/opt/mlserver-dash/mlserver-dash-backend
 Restart=always
 
 [Install]
@@ -391,16 +380,16 @@ WantedBy=multi-user.target
 
 启用并启动：
 ```bash
-sudo systemctl enable mlserver-dash-backend
-sudo systemctl start mlserver-dash-backend
+sudo systemctl enable mlserver-dash
+sudo systemctl start mlserver-dash
 ```
 
 ## 🔧 故障排除
 
 ### GPU 不显示
 - 验证 NVIDIA 驱动: `nvidia-smi`
-- 安装 pynvml: `pip install nvidia-ml-py3`
-- 检查后端日志
+- 确保 NVIDIA 驱动已正确安装
+- 检查后端日志是否有 NVML 相关错误
 
 ### Docker 容器不显示
 - 检查 Docker 服务: `systemctl status docker`
@@ -437,11 +426,12 @@ taskkill /PID <PID> /F
 
 ## 🙏 致谢
 
-- [FastAPI](https://fastapi.tiangolo.com/) - Web 框架
+- [Gin](https://gin-gonic.com/) - Web 框架
+- [gopsutil](https://github.com/shirou/gopsutil) - 系统监控库
+- [go-nvml](https://github.com/NVIDIA/go-nvml) - NVIDIA GPU 监控
 - [React](https://react.dev/) - UI 框架
 - [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
 - [lucide](https://lucide.dev/) - 图标库
-- [psutil](https://psutil.readthedocs.io/) - 系统监控库
 
 ---
 
