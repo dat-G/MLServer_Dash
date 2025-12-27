@@ -3,14 +3,14 @@
 <div align="center">
 
 ![MLServer_Dash](https://img.shields.io/badge/MLServer_Dash-v1.0.0-blue?style=for-the-badge)
-![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go)
+![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?style=for-the-badge&logo=go)
 ![React](https://img.shields.io/badge/React-18+-cyan?style=for-the-badge&logo=react)
 ![Gin](https://img.shields.io/badge/Gin-Latest-00ADD8?style=for-the-badge&logo=go)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 **现代化实时服务器监控面板，专为深度学习服务器监控而设计**
 
-[功能特性](#-功能特性) • [快速开始](#-快速开始) • [配置说明](#-配置说明) • [API 文档](#-api-文档)
+[功能特性](#-功能特性) · [快速开始](#-快速开始) · [配置说明](#-配置说明) · [API 文档](#-api-文档)
 
 </div>
 
@@ -24,21 +24,22 @@
 
 </div>
 
-**MLServer_Dash** 是一款专为机器学习工作站和生产服务器设计的综合服务器监控解决方案。它采用赛博辉光风格的界面，提供实时的系统资源可视化，包括 CPU、内存、磁盘、网络和 NVIDIA GPU 指标。
+**MLServer_Dash** 是一款专为机器学习工作站和生产服务器设计的综合服务器监控解决方案。它采用赛博辉光风格的界面，通过 WebSocket 提供实时的系统资源可视化，包括 CPU、内存、磁盘、网络和 NVIDIA GPU 指标。
 
 ## ✨ 功能特性
 
 ### 硬件监控
-- **CPU 监控** ⚡ - 实时显示每核心利用率，支持多核/多线程展示
-- **内存监控** 🧠 - 显示内存使用情况和型号信息
+- **CPU 监控** ⚡ - 实时显示每核心利用率，支持多核/多线程展示，带历史折线图
+- **内存监控** 🧠 - 显示内存使用情况和型号信息，带历史折线图
 - **物理磁盘监控** 💾 - 智能检测物理磁盘，显示型号和容量
 - **NVIDIA GPU 监控** 🎮 - 支持利用率、温度、功耗/TDP、显存等指标
 - **网络监控** 🌐 - 双折线图展示上传/下载速度，显示网卡型号和 IP 地址
 
 ### 容器管理
-- **Docker 管理** 🐳 - 查看运行中的容器，支持启动/停止/重启操作
+- **Docker 管理** 🐳 - 查看运行中的容器
 
 ### 用户体验
+- **实时更新** 📡 - 通过 WebSocket 实现毫秒级数据推送
 - **响应式设计** 📱 - 完美适配桌面和移动设备
 - **赛博朋克主题** 🌃 - 炫酷的霓虹灯风格界面
 - **零配置启动** 🚀 - 开箱即用，自动检测系统硬件
@@ -48,9 +49,10 @@
 ### 后端
 | 技术 | 说明 |
 |------|------|
+| ![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat-square) | 编程语言 |
 | ![Gin](https://img.shields.io/badge/Gin-Latest-00ADD8?style=flat-square) | 高性能 Web 框架 |
+| ![gorilla/websocket](https://img.shields.io/badge/websocket-latest-blue?style=flat-square) | WebSocket 通信 |
 | ![gopsutil](https://img.shields.io/badge/gopsutil-latest-blue?style=flat-square) | 跨平台系统监控 |
-| ![go-nvml](https://img.shields.io/badge/go--nvml-latest-green?style=flat-square) | NVIDIA GPU 监控 |
 | ![docker](https://img.shields.io/badge/docker-latest-blue?style=flat-square) | Docker 容器管理 |
 
 ### 前端
@@ -65,8 +67,8 @@
 ## 📋 前置要求
 
 ### 手动安装方式
-- **Go**: 1.21 或更高版本
-- **Node.js**: 16.x 或更高版本
+- **Go**: 1.24 或更高版本
+- **Node.js**: 18.x 或更高版本
 
 ### Docker 安装方式
 - **Docker**: 20.x 或更高版本
@@ -87,6 +89,7 @@
 mlserver-dash-backend.exe
 
 # Linux/macOS
+chmod +x mlserver-dash-backend
 ./mlserver-dash-backend
 ```
 
@@ -128,18 +131,36 @@ cp .env.example .env
 # 编辑 .env 文件自定义端口
 
 # 启动服务
-docker-compose up -d
+docker compose up -d
 
 # 查看日志
-docker-compose logs -f
+docker compose logs -f
 
 # 停止服务
-docker-compose down
+docker compose down
 ```
 
 访问地址：`http://localhost:8000`
 
 > **注意**: Docker 中使用 GPU 监控需要安装 [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker)
+
+---
+
+### 方式四：开发模式（前后端分离）
+
+```bash
+# 终端 1: 启动后端
+cd backend
+go run ./cmd/main.go
+
+# 终端 2: 启动前端
+cd frontend
+npm install  # 首次运行需要安装依赖
+npm run dev
+```
+
+前端开发服务器：`http://localhost:5173`
+后端 API：`http://localhost:8000`
 
 ## ⚙️ 配置说明
 
@@ -166,22 +187,38 @@ docker-compose down
 
 | 选项 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `app.appName` | string | `"MLServer_Dash"` | 应用名称（用于界面和 API） |
+| `app.appName` | string | `"MLServer_Dash"` | 应用名称（用于界面和页面标题） |
 | `app.githubUrl` | string | GitHub URL | 项目仓库链接 |
 | `server.host` | string | `"0.0.0.0"` | 服务绑定地址 |
 | `server.port` | number | `8000` | 服务端口 |
 | `server.corsOrigins` | array | `["*"]` | 允许的 CORS 来源（`["*"]` 表示允许所有） |
-| `server.pollInterval` | number | `2000` | 前端轮询间隔（毫秒） |
+| `server.pollInterval` | number | `2000` | 系统监控数据采集间隔（毫秒） |
 | `server.historySize` | number | `30` | 图表历史数据点数量 |
 
 ## 📡 API 文档
 
-### 基础地址
-```
-http://localhost:8000
+### WebSocket 连接
+
+```http
+WS /api/ws
 ```
 
-### 接口列表
+建立 WebSocket 连接后，服务器会自动推送系统更新。消息格式：
+
+```json
+{
+  "type": "system",
+  "data": {
+    "hostname": "ml-server-01",
+    "cpu": { ... },
+    "memory": { ... },
+    "gpu": [ ... ],
+    "network": [ ... ]
+  }
+}
+```
+
+### REST API 接口
 
 #### 获取系统信息
 ```http
@@ -195,6 +232,7 @@ GET /api/system
 {
   "hostname": "ml-server-01",
   "os": "Linux 6.14.0-37-generic",
+  "uptime": 86400,
   "distro": {
     "name": "Ubuntu 24.04 LTS",
     "id": "ubuntu"
@@ -210,6 +248,8 @@ GET /api/system
     "total": 68719476736,
     "used": 34359738368,
     "percent": 50.0,
+    "total_human": "64 GB",
+    "used_human": "32 GB",
     "model": "Kingston Fury Beast"
   },
   "gpu": [
@@ -220,14 +260,34 @@ GET /api/system
       "power_usage": 350,
       "power_limit": 450,
       "enforced_power_limit": 450,
-      "power_default_limit": 450
+      "power_default_limit": 450,
+      "memory": {
+        "total": 25757458432,
+        "used": 12878729216,
+        "percent": 50.0,
+        "total_human": "24 GB",
+        "used_human": "12 GB"
+      }
     }
   ],
   "network": [
     {
       "name": "eth0",
+      "ipv4": "192.168.1.100",
+      "ipv6": "fe80::1",
+      "speed": 1000,
       "speed_up": 1024000,
       "speed_down": 2048000
+    }
+  ],
+  "disks": [
+    {
+      "name": "/dev/nvme0n1",
+      "total": 1099511627776,
+      "used": 549755813888,
+      "percent": 50.0,
+      "total_human": "1 TB",
+      "used_human": "512 GB"
     }
   ]
 }
@@ -240,16 +300,18 @@ GET /api/docker
 
 返回运行中的 Docker 容器列表。
 
-#### 容器操作
-```http
-POST /api/docker/{container_id}/action?action={action}
+**响应示例：**
+```json
+[
+  {
+    "id": "abc123",
+    "name": "ml-training",
+    "image": "pytorch/pytorch:latest",
+    "status": "running",
+    "ports": "0.0.0.0:8888->8888/tcp"
+  }
+]
 ```
-
-控制 Docker 容器。
-
-**参数：**
-- `container_id` (路径) - 容器 ID 或名称
-- `action` (查询) - 操作类型: `start` | `stop` | `restart`
 
 #### 健康检查
 ```http
@@ -257,6 +319,16 @@ GET /api/health
 ```
 
 检查 API 健康状态和可用功能。
+
+**响应示例：**
+```json
+{
+  "status": "healthy",
+  "gpu": true,
+  "docker": true,
+  "timestamp": "2025-12-27T10:30:00Z"
+}
+```
 
 ## 📁 项目结构
 
@@ -275,43 +347,43 @@ MLServer_Dash/
 │   │   ├── monitor/         # 系统监控
 │   │   └── router/          # 路由设置
 │   ├── Dockerfile           # 多阶段构建（前端+后端）
-│   ├── go.mod               # Go 模块
 │   ├── Makefile             # 构建脚本
-│   └── .dockerignore        # Docker 构建排除
+│   ├── go.mod               # Go 模块
+│   └── go.sum               # 依赖锁定
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx         # React 主组件
-│   │   └── main.jsx        # 入口文件
+│   │   ├── App.jsx          # React 主组件
+│   │   └── main.jsx         # 入口文件
 │   ├── index.html
 │   ├── package.json
-│   └── vite.config.js
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   └── postcss.config.js
 ├── config.json              # 统一配置文件
 ├── docker-compose.yml       # Docker Compose 编排
 ├── build.bat                # Windows 构建脚本
 ├── build.sh                 # Linux/macOS 构建脚本
-├── .env.example            # 环境变量模板
-├── LICENSE                 # MIT 许可证
-├── preview.png             # 预览图
+├── .env.example             # 环境变量模板
+├── .gitignore
+├── LICENSE                  # MIT 许可证
+├── preview.png              # 预览图
 └── README.md
 ```
 
 ## 💻 开发指南
 
-### 开发模式（前后端分离）
+### 使用 Makefile
 
 ```bash
-# 终端 1: 启动后端
 cd backend
-go run ./cmd/main.go
 
-# 终端 2: 启动前端
-cd frontend
-npm install
-npm run dev
+make build-embed    # 构建嵌入前端的完整版本
+make run            # 运行开发服务器
+make clean          # 清理构建文件
+make deps           # 下载依赖
+make fmt            # 格式化代码
+make vet            # 代码检查
 ```
-
-前端开发服务器：`http://localhost:5173`
-后端 API：`http://localhost:8000`
 
 ### 生产构建
 
@@ -327,15 +399,6 @@ chmod +x build.sh
 ```
 
 生成的可执行文件包含完整应用，直接运行即可。
-
-### 使用 Makefile
-
-```bash
-cd backend
-make build-embed    # 构建嵌入前端的完整版本
-make run           # 运行开发服务器
-make clean         # 清理构建文件
-```
 
 ### 代码规范
 - **Go**: 遵循 Effective Go，使用 `gofmt` 格式化
@@ -369,10 +432,12 @@ Description=MLServer_Dash
 After=network.target
 
 [Service]
+Type=simple
 User=www-data
 WorkingDirectory=/opt/mlserver-dash
 ExecStart=/opt/mlserver-dash/mlserver-dash-backend
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
@@ -380,8 +445,30 @@ WantedBy=multi-user.target
 
 启用并启动：
 ```bash
+sudo systemctl daemon-reload
 sudo systemctl enable mlserver-dash
 sudo systemctl start mlserver-dash
+sudo systemctl status mlserver-dash
+```
+
+### 反向代理配置（Nginx）
+
+```nginx
+server {
+    listen 80;
+    server_name monitor.example.com;
+
+    location / {
+        proxy_pass http://localhost:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
 ```
 
 ## 🔧 故障排除
@@ -395,6 +482,11 @@ sudo systemctl start mlserver-dash
 - 检查 Docker 服务: `systemctl status docker`
 - 添加用户到 docker 组: `sudo usermod -aG docker $USER`
 - 重新登录使组权限生效
+
+### WebSocket 连接失败
+- 检查防火墙设置
+- 确认反向代理支持 WebSocket 升级
+- 查看 `config.json` 中的 CORS 设置
 
 ### CORS 错误
 - 更新 `config.json` 中的 `corsOrigins`
@@ -428,7 +520,7 @@ taskkill /PID <PID> /F
 
 - [Gin](https://gin-gonic.com/) - Web 框架
 - [gopsutil](https://github.com/shirou/gopsutil) - 系统监控库
-- [go-nvml](https://github.com/NVIDIA/go-nvml) - NVIDIA GPU 监控
+- [gorilla/websocket](https://github.com/gorilla/websocket) - WebSocket 实现
 - [React](https://react.dev/) - UI 框架
 - [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
 - [lucide](https://lucide.dev/) - 图标库
