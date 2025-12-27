@@ -1,20 +1,44 @@
-import { useState } from 'react'
-import { Server, Layers, Plus, Settings, Cpu, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Server, Layers, Settings, Cpu, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import ServerDashboard from './components/ServerDashboard'
 import configJson from '../../config.json'
 
 const APP_TITLE = configJson.app.appName
 const GITHUB_URL = configJson.app.githubUrl
+const API_BASE = '/api'
 
 function App() {
   // 服务器列表状态
-  const [servers] = useState([
-    { id: 1, name: 'Local Master', url: 'http://localhost:8000', status: 'online' },
-    { id: 2, name: 'Model Worker 1', url: 'http://192.168.1.50:8000', status: 'offline' },
-    { id: 3, name: 'Model Worker 2', url: 'http://192.168.1.51:8000', status: 'online' },
-    { id: 4, name: 'Inference Server', url: 'http://192.168.1.60:8000', status: 'online' },
-  ])
-  const [activeServerId, setActiveServerId] = useState(1)
+  const [servers, setServers] = useState([])
+  const [activeServerId, setActiveServerId] = useState(null)
+
+  // 加载服务器列表
+  useEffect(() => {
+    fetchServers()
+  }, [])
+
+  // 获取服务器列表
+  const fetchServers = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/servers`)
+      const data = await response.json()
+      // 转换 API 格式到前端格式
+      const transformedServers = data.servers.map(s => ({
+        id: s.id,
+        name: s.name,
+        url: `http://${s.host}:${s.port}`,
+        status: s.status,
+      }))
+      setServers(transformedServers)
+
+      // 如果没有选中的服务器，默认选中第一个
+      if (transformedServers.length > 0 && !activeServerId) {
+        setActiveServerId(transformedServers[0].id)
+      }
+    } catch (error) {
+      console.error('Failed to fetch servers:', error)
+    }
+  }
 
   // Sidebar 状态
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)  // 桌面端：展开/折叠
@@ -144,15 +168,6 @@ function App() {
             ) : (
               <ChevronRight className="w-4 h-4 flex-shrink-0" />
             )}
-          </button>
-
-          {/* 添加服务器按钮 */}
-          <button
-            className={`w-full flex items-center ${isSidebarOpen ? 'justify-center gap-2' : 'justify-center'} px-4 py-2.5 rounded-xl bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 text-sm font-medium`}
-            title={!isSidebarOpen ? '添加服务器' : undefined}
-          >
-            <Plus className="w-4 h-4 flex-shrink-0" />
-            <span className={isSidebarOpen ? 'block' : 'hidden'}>添加服务器</span>
           </button>
 
           {/* 设置按钮 */}
