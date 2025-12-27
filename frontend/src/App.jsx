@@ -19,7 +19,7 @@ import configJson from '../../config.json'
 
 const APP_TITLE = configJson.app.appName
 const GITHUB_URL = configJson.app.githubUrl
-const HISTORY_SIZE = configJson.backend.historySize
+const HISTORY_SIZE = configJson.server.historySize
 
 const COLORS = {
   blue: '#00d4ff',
