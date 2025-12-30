@@ -100,9 +100,92 @@ cd ..
 print_success "前端构建完成"
 echo
 
-# 步骤 2: 复制前端到后端
+# 步骤 2: 构建客户端
 echo "========================================"
-print_info "[2/4] 复制前端到后端嵌入目录..."
+print_info "[2/5] 构建客户端..."
+echo "========================================"
+
+cd client
+
+# 检查 go.mod 是否存在
+if [ ! -f "go.mod" ]; then
+    print_warning "go.mod 未找到，正在初始化..."
+    go mod init github.com/dat-G/MLServer_Dash/client
+    go get github.com/shirou/gopsutil/v3@v3.24.5
+fi
+
+# 下载依赖
+print_info "下载客户端依赖..."
+if ! go mod tidy; then
+    print_error "客户端依赖下载失败"
+    cd ..
+    exit 1
+fi
+
+# 创建输出目录
+mkdir -p ../backend/internal/embed/binaries
+
+# 构建 Windows 客户端 (amd64)
+print_info "构建 Windows 客户端 (amd64)..."
+GOOS=windows GOARCH=amd64 go build -o ../backend/internal/embed/binaries/mlserver-client-windows-amd64.exe -ldflags="-s -w" .
+if [ $? -ne 0 ]; then
+    print_error "Windows 客户端构建失败"
+    cd ..
+    exit 1
+fi
+
+# 构建 Windows ARM64 客户端
+print_info "构建 Windows 客户端 (arm64)..."
+GOOS=windows GOARCH=arm64 go build -o ../backend/internal/embed/binaries/mlserver-client-windows-arm64.exe -ldflags="-s -w" .
+if [ $? -ne 0 ]; then
+    print_error "Windows ARM64 客户端构建失败"
+    cd ..
+    exit 1
+fi
+
+# 构建 Linux 客户端 (amd64)
+print_info "构建 Linux 客户端 (amd64)..."
+GOOS=linux GOARCH=amd64 go build -o ../backend/internal/embed/binaries/mlserver-client-linux-amd64 -ldflags="-s -w" .
+if [ $? -ne 0 ]; then
+    print_error "Linux 客户端构建失败"
+    cd ..
+    exit 1
+fi
+
+# 构建 Linux 客户端 (arm64)
+print_info "构建 Linux 客户端 (arm64)..."
+GOOS=linux GOARCH=arm64 go build -o ../backend/internal/embed/binaries/mlserver-client-linux-arm64 -ldflags="-s -w" .
+if [ $? -ne 0 ]; then
+    print_error "Linux ARM64 客户端构建失败"
+    cd ..
+    exit 1
+fi
+
+# 构建 macOS 客户端 (amd64)
+print_info "构建 macOS 客户端 (amd64)..."
+GOOS=darwin GOARCH=amd64 go build -o ../backend/internal/embed/binaries/mlserver-client-darwin-amd64 -ldflags="-s -w" .
+if [ $? -ne 0 ]; then
+    print_error " macOS 客户端构建失败"
+    cd ..
+    exit 1
+fi
+
+# 构建 macOS 客户端 (arm64)
+print_info "构建 macOS 客户端 (arm64)..."
+GOOS=darwin GOARCH=arm64 go build -o ../backend/internal/embed/binaries/mlserver-client-darwin-arm64 -ldflags="-s -w" .
+if [ $? -ne 0 ]; then
+    print_error "macOS ARM64 客户端构建失败"
+    cd ..
+    exit 1
+fi
+
+cd ..
+print_success "客户端构建完成 (6个平台)"
+echo
+
+# 步骤 3: 复制前端到后端
+echo "========================================"
+print_info "[3/5] 复制前端到后端嵌入目录..."
 echo "========================================"
 
 rm -rf backend/internal/embed/dist
@@ -114,9 +197,9 @@ fi
 print_success "前端文件已复制到 backend/internal/embed/dist"
 echo
 
-# 步骤 3: 下载 Go 依赖
+# 步骤 4: 下载 Go 依赖
 echo "========================================"
-print_info "[3/4] 下载 Go 依赖..."
+print_info "[4/5] 下载 Go 依赖..."
 echo "========================================"
 
 cd backend
@@ -129,9 +212,9 @@ print_success "Go 依赖下载完成"
 cd ..
 echo
 
-# 步骤 4: 构建后端
+# 步骤 5: 构建后端
 echo "========================================"
-print_info "[4/4] 构建后端..."
+print_info "[5/5] 构建后端..."
 echo "========================================"
 
 cd backend

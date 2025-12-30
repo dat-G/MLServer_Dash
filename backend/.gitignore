@@ -1,3 +1,5 @@
 # Binaries
 *.exe
 *.exe~
+internal/embed/binaries/*
+internal/embed/dist/*
