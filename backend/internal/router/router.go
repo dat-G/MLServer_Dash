@@ -3,12 +3,12 @@ package router
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/dat-G/MLServer_Dash/backend/internal/config"
 	embedfs "github.com/dat-G/MLServer_Dash/backend/internal/embed"
 	"github.com/dat-G/MLServer_Dash/backend/internal/handlers"
 	"github.com/dat-G/MLServer_Dash/backend/internal/middleware"
 	ws "github.com/dat-G/MLServer_Dash/backend/internal/websocket"
+	"github.com/gin-gonic/gin"
 )
 
 // Setup 配置并返回 Gin 路由引擎
@@ -39,6 +39,13 @@ func setupAPIRoutes(router *gin.Engine) {
 		api.GET("/docker", handlers.DockerListHandler)
 		api.POST("/docker/:container_id/action", handlers.DockerActionHandler)
 		api.GET("/health", handlers.HealthCheckHandler)
+
+		// Client management routes
+		api.GET("/client/download", handlers.ClientDownloadHandler)
+		api.POST("/client/metrics", handlers.ClientMetricsHandler)
+		api.GET("/clients", handlers.GetClientsHandler)
+		// 服务器管理路由（只读）
+		api.GET("/servers", handlers.GetServers)
 	}
 }
 

@@ -18,7 +18,30 @@ RUN npm ci
 RUN npm run build
 
 # ============================================
-# 阶段 2: 构建后端（嵌入前端）
+# 阶段 2: 构建客户端（跨平台）
+# ============================================
+FROM golang:1.24-alpine AS client-builder
+
+WORKDIR /client
+
+# 安装构建依赖
+RUN apk add --no-cache git gcc musl-dev
+
+# 复制 client go mod 文件
+COPY client/go.mod ./
+RUN go mod download
+
+# 复制 client 源代码
+COPY client/*.go ./
+COPY client/internal ./internal
+
+# 构建跨平台客户端
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o mlserver-client-linux-amd64 -ldflags="-s -w" .
+RUN CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o mlserver-client-darwin-amd64 -ldflags="-s -w" .
+RUN CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o mlserver-client-darwin-arm64 -ldflags="-s -w" .
+
+# ============================================
+# 阶段 3: 构建后端（嵌入前端和客户端）
 # ============================================
 FROM golang:1.24-alpine AS backend-builder
 
@@ -38,11 +61,17 @@ COPY backend/internal ./internal
 # 从前端构建阶段复制 dist 到嵌入目录
 COPY --from=frontend-builder /frontend/dist ./internal/embed/dist
 
+# 从客户端构建阶段复制二进制文件到嵌入目录
+RUN mkdir -p ./internal/embed/binaries
+COPY --from=client-builder /client/mlserver-client-linux-amd64 ./internal/embed/binaries/
+COPY --from=client-builder /client/mlserver-client-darwin-amd64 ./internal/embed/binaries/
+COPY --from=client-builder /client/mlserver-client-darwin-arm64 ./internal/embed/binaries/
+
 # 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -o mlserver-dash-backend ./cmd/main.go
 
 # ============================================
-# 阶段 3: 运行镜像
+# 阶段 4: 运行镜像
 # ============================================
 FROM alpine:latest
 

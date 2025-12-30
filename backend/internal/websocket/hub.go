@@ -84,6 +84,17 @@ func (h *Hub) BroadcastDocker(data interface{}) {
 	}
 }
 
+// BroadcastClient 广播客户端更新
+func (h *Hub) BroadcastClient(serverID string, data interface{}) {
+	h.broadcast <- Message{
+		Type: "client",
+		Data: map[string]interface{}{
+			"server_id": serverID,
+			"metrics":   data,
+		},
+	}
+}
+
 // ClientCount 返回当前连接的客户端数量
 func (h *Hub) ClientCount() int {
 	h.mu.RLock()
